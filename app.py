@@ -1,46 +1,54 @@
 import streamlit as st
-import re
 
-# --- פונקציית הגנה על פרטיות ---
-def anonymize_text(text):
-    if not text: return ""
-    text = re.sub(r'\d{2,3}-?\d{7}', '[PHONE]', text) # טלפונים
-    text = re.sub(r'\b\d{9}\b', '[ID]', text) # תעודות זהות
-    return text
+st.set_page_config(page_title="תשאול טרום-ביקור - ד"ר גנמור", layout="centered")
 
-# --- הגדרת סיסמה פשוטה ---
-def check_password():
-    if "password_correct" not in st.session_state:
-        st.session_state["password_correct"] = False
+# כותרת הממשק
+st.title("מערכת הכנה לביקור נוירולוגי - ד"ר איתמר גנמור")
+st.write("אנא מלאו את הפרטים הבאים כדי לסייע לדוקטור להכין את סיכום הביקור בצורה המדויקת ביותר.")
+
+with st.form("patient_form"):
+    st.subheader("1. פרטים דמוגרפיים")
+    job = st.text_input("עיסוק (בעבר ובהווה):")
+    years_of_study = st.text_input("מספר שנות לימוד ופירוט תארים:")
+    origin = st.text_input("ארץ לידה ומוצא:")
+    dominant_hand = st.selectbox("יד דומיננטית:", ["ימנית", "שמאלית", "אמבידקסטרי"])
+    insurance = st.radio("האם קיים ביטוח פרטי עם סעיף תרופות מחוץ לסל?", ["כן", "לא", "לא ידוע"])
+
+    st.subheader("2. רקע רפואי ושינה")
+    complaint = st.text_area("מהי התלונה העיקרית ומתי החלה?")
+    rbd_symptoms = st.radio("האם יש עדות לצעקות או תנועות חריגות בשינה (RBD)?", ["כן", "לא", "לעתים"])
+    hearing = st.radio("האם יש ירידה בשמיעה?", ["לא", "כן - ללא מכשיר", "כן - נעזר במכשיר שמיעה"])
     
-    if st.session_state["password_correct"]:
-        return True
+    st.subheader("3. תפקוד ובטיחות")
+    driving = st.radio("האם המטופל/ת נוהג/ת כיום?", ["כן", "לא", "הפסיק/ה לאחרונה"])
+    falls = st.radio("האם היו נפילות בתקופה האחרונה?", ["לא", "כן"])
+    urinary = st.radio("האם יש הפרעה בשליטה על סוגרים?", ["לא", "דחיפות", "אי-שליטה מלאה"])
 
-    st.subheader('כניסה למערכת התשאול של ד"ר גנמור')
-    pwd = st.text_input("נא להזין סיסמה כפי שקיבלתם מהמרפאה:", type="password")
-    if st.button("כניסה"):
-        if pwd == "Ganmore2026": # כאן אתה קובע את הסיסמה
-            st.session_state["password_correct"] = True
-            st.rerun()
-        else:
-            st.error("סיסמה שגויה")
-    return False
+    submitted = st.form_submit_button("הפק סיכום גולמי לרופא")
 
-if check_password():
-    st.title("תשאול טרום-ביקור - נוירולוגיה קוגניטיבית")
+if submitted:
+    st.success("הנתונים עובדו בהצלחה. להלן הטיוטה לסיכום:")
     
-    with st.form("main_form"):
-        # פרטים טכניים ללא שמות
-        job = st.text_input("עיסוק (עבר והווה):")
-        edu = st.text_input("שנות לימוד ותארים:")
-        
-        # אנמנזה
-        history = st.text_area("תיאור קצר של סיבת הפנייה (נא להימנע משמות):")
-        
-        # שאלות ספציפיות מהסגנון שלך
-        rbd = st.radio("האם יש תנועות חריגות או צעקות בשינה?", ["לא", "כן", "לא ידוע"])
-        hearing = st.radio("מצב שמיעה:", ["תקין", "ירידה - עם מכשיר", "ירידה - ללא מכשיר"])
-        
-        if st.form_submit_button("הפק סיכום"):
-            safe_history = anonymize_text(history)
-            st.code(f"עיסוק: {job}\nשנות לימוד: {edu}\nשינה (RBD): {rbd}\nשמיעה: {hearing}\n\nתיאור: {safe_history}")
+    # יצירת הטקסט הערוך להעתקה
+    summary_text = f"""
+    ### טיוטה לסיכום ביקור (מבוסס תשאול מוקדם):
+    
+    **פרטים אישיים:**
+    עיסוק: {job}
+    שנות לימוד: {years_of_study}
+    מוצא: {origin}
+    דומיננטיות: {dominant_hand}
+    ביטוח פרטי: {insurance}
+    
+    **אנמנזה גולמית:**
+    תלונה עיקרית: {complaint}
+    הפרעת שינה (RBD): {rbd_symptoms}
+    שמיעה: {hearing}
+    
+    **תפקוד ובטיחות:**
+    נהיגה: {driving}
+    נפילות: {falls}
+    סוגרים: {urinary}
+    """
+    
+    st.text_area("העתק מכאן:", value=summary_text, height=400)
