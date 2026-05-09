@@ -16,7 +16,7 @@ def check_password():
     if st.session_state["password_correct"]:
         return True
 
-    st.subheader("כניסה למערכת התשאול של ד"ר גנמור")
+    st.subheader('כניסה למערכת התשאול של ד"ר גנמור')
     pwd = st.text_input("נא להזין סיסמה כפי שקיבלתם מהמרפאה:", type="password")
     if st.button("כניסה"):
         if pwd == "Ganmore2026": # כאן אתה קובע את הסיסמה
