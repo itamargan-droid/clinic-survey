@@ -1,9 +1,9 @@
 import streamlit as st
 
-st.set_page_config(page_title="תשאול טרום-ביקור - ד"ר גנמור", layout="centered")
+st.set_page_config(page_title='תשאול טרום-ביקור - ד"ר גנמור', layout="centered")
 
 # כותרת הממשק
-st.title("מערכת הכנה לביקור נוירולוגי - ד"ר איתמר גנמור")
+st.title('מערכת הכנה לביקור נוירולוגי - ד"ר איתמר גנמור')
 st.write("אנא מלאו את הפרטים הבאים כדי לסייע לדוקטור להכין את סיכום הביקור בצורה המדויקת ביותר.")
 
 with st.form("patient_form"):
